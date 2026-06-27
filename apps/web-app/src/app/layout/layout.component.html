@@ -1,0 +1,114 @@
+<div class="shell-body">
+      
+  <!-- Desktop Permanent Sidebar -->
+  @if (!isMobileView()) {
+    <aside class="shell-body__sidebar">
+      <!-- Logo Area -->
+      <div class="shell-body__sidebar-logo">
+        <div class="logo-icon">
+          <i class="pi pi-box"></i>
+        </div>
+        <span class="logo-text">MES <span>Pro</span></span>
+      </div>
+      
+      <!-- Custom Navigation Links -->
+      <div class="shell-body__sidebar-nav">
+        @for (item of navItems; track item.route) {
+          <a [routerLink]="item.route" 
+             [routerLinkActive]="'nav-item-active'" 
+             [routerLinkActiveOptions]="item.exact ? {exact: true} : {exact: false}"
+             class="nav-item">
+            <i [class]="item.icon"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        }
+      </div>
+      
+      <!-- User Area -->
+      <div class="shell-body__sidebar-user">
+        <div class="user-avatar">AP</div>
+        <div class="user-info">
+          <p class="user-name">Admin Person</p>
+          <p class="user-role">Production Manager</p>
+        </div>
+      </div>
+    </aside>
+  }
+
+  <!-- Mobile Sidebar (<p-drawer>) -->
+  @if (isMobileView()) {
+    <p-drawer [(visible)]="drawerVisible" 
+              [modal]="true" 
+              [dismissible]="true" 
+              [showCloseIcon]="true" 
+              position="left" 
+              styleClass="sidebar-mobile-drawer">
+      
+      <ng-template pTemplate="header">
+        <div class="shell-body__sidebar-logo" style="border: none; padding: 0 1rem; height: 3rem;">
+          <div class="logo-icon">
+            <i class="pi pi-box"></i>
+          </div>
+          <span class="logo-text">MES <span>Pro</span></span>
+        </div>
+      </ng-template>
+
+      <div class="shell-body__sidebar-nav">
+        @for (item of navItems; track item.route) {
+          <a [routerLink]="item.route" 
+             [routerLinkActive]="'nav-item-active'" 
+             [routerLinkActiveOptions]="item.exact ? {exact: true} : {exact: false}"
+             (click)="drawerVisible = false"
+             class="nav-item">
+            <i [class]="item.icon"></i>
+            <span>{{ item.label }}</span>
+          </a>
+        }
+      </div>
+
+      <div class="shell-body__sidebar-user" style="margin-top: auto;">
+        <div class="user-avatar">AP</div>
+        <div class="user-info">
+          <p class="user-name">Admin Person</p>
+        </div>
+      </div>
+    </p-drawer>
+  }
+
+  <!-- Main Content -->
+  <main class="shell-body__main">
+    <header class="shell-body__topbar">
+      
+      <div class="shell-body__topbar-left">
+        @if (isMobileView()) {
+          <!-- Hamburger Menu (Topbar) -->
+          <p-button styleClass="menu-toggle" icon="pi pi-bars" [text]="true" [rounded]="true" (onClick)="drawerVisible = true" />
+        }
+        
+        <div class="breadcrumb">
+          <span>MES Pro</span>
+          <i class="pi pi-chevron-right"></i>
+          <span class="active">Overview</span>
+        </div>
+      </div>
+
+      <div class="shell-body__topbar-right">
+        <!-- Search -->
+        <p-iconfield [style]="{'display': isMobileView() ? 'none' : 'block'}">
+            <p-inputicon styleClass="pi pi-search" />
+            <input type="text" pInputText placeholder="Search orders..." />
+        </p-iconfield>
+        
+        <!-- Theme Toggle -->
+        <p-button [icon]="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'" [rounded]="true" [text]="true" severity="secondary" (onClick)="toggleTheme()"></p-button>
+        
+        <!-- Notifications -->
+        <p-button icon="pi pi-bell" [rounded]="true" [text]="true" severity="secondary"></p-button>
+      </div>
+    </header>
+
+    <div class="shell-body__content">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

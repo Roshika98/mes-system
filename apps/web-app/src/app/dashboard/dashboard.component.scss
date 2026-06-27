@@ -1,0 +1,213 @@
+.dashboard-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+
+        .title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--app-text-color);
+            margin: 0 0 0.25rem 0;
+            letter-spacing: -0.025em;
+        }
+
+        .subtitle {
+            font-size: 0.875rem;
+            color: var(--app-muted-text-color);
+            margin: 0;
+        }
+
+        .update-time {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--app-muted-text-color);
+            background-color: var(--app-surface-color);
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--app-border-color);
+        }
+    }
+
+    &__kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.25rem;
+
+        .kpi-card {
+            background: var(--app-surface-color);
+            border: 1px solid var(--app-border-color);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+
+            &-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                .label {
+                    font-size: 0.875rem;
+                    font-weight: 500;
+                    color: var(--app-muted-text-color);
+                }
+                
+                .icon {
+                    color: var(--app-muted-text-color);
+                }
+            }
+
+            &-value {
+                font-size: 2rem;
+                font-weight: 700;
+                color: var(--app-text-color);
+                font-family: monospace;
+            }
+
+            &-trend {
+                font-size: 0.75rem;
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+
+                &--positive {
+                    color: var(--income-color);
+                }
+                &--negative {
+                    color: var(--expense-color);
+                }
+                &--warning {
+                    color: #f59e0b; /* Warning color */
+                }
+            }
+        }
+    }
+
+    &__main-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+
+        @media (min-width: 1024px) {
+            grid-template-columns: 2fr 1fr;
+        }
+
+        .card-wrapper {
+            background: var(--app-surface-color);
+            border: 1px solid var(--app-border-color);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            
+            &-header {
+                font-size: 1.125rem;
+                font-weight: 600;
+                color: var(--app-text-color);
+                margin: 0 0 1rem 0;
+            }
+        }
+    }
+
+    &__wo-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        .wo-item {
+            border: 1px solid var(--app-border-color);
+            background-color: var(--app-bg);
+            border-radius: 0.5rem;
+            padding: 1rem;
+
+            &-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 0.5rem;
+
+                .wo-id {
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                    letter-spacing: 0.05em;
+                    color: var(--p-primary-500);
+                    margin-bottom: 0.25rem;
+                }
+
+                .wo-name {
+                    color: var(--app-text-color);
+                    font-weight: 500;
+                    font-size: 0.875rem;
+                }
+            }
+
+            &-progress {
+                margin-top: 1rem;
+                
+                .progress-label {
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 0.75rem;
+                    color: var(--app-muted-text-color);
+                    margin-bottom: 0.25rem;
+
+                    .value {
+                        font-family: monospace;
+                    }
+                }
+            }
+        }
+    }
+
+    &__resource-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        .resource-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            &-info {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+
+                .status-dot {
+                    width: 0.5rem;
+                    height: 0.5rem;
+                    border-radius: 50%;
+
+                    &--active {
+                        background-color: var(--income-color);
+                    }
+                    &--maint {
+                        background-color: #f59e0b;
+                    }
+                    &--idle {
+                        background-color: var(--app-muted-text-color);
+                    }
+                }
+
+                .name {
+                    font-size: 0.875rem;
+                    color: var(--app-muted-text-color);
+                }
+            }
+
+            .status-text {
+                font-family: monospace;
+                font-size: 0.875rem;
+                color: var(--app-text-color);
+            }
+        }
+    }
+}

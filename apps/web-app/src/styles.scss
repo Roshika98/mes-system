@@ -1,1 +1,37 @@
-/* You can add global styles to this file, and also import other style files */
+@import "primeicons/primeicons.css";
+
+/* Global Variables */
+:root {
+  --app-bg: #f5f7fa;
+  --app-surface-color: #ffffff;
+  --app-hover-bg: #f8fafc;
+  --app-border-color: #e2e8f0;
+  --app-text-color: #0f172a;
+  --app-muted-text-color: #64748b;
+  --income-color: #10b981;
+  --expense-color: #f43f5e;
+  --brand-primary: #10b981;
+  --brand-soft-bg: rgba(16, 185, 129, 0.1);
+}
+
+.app-dark {
+  --app-bg: #09090b;
+  --app-surface-color: #18181b;
+  --app-hover-bg: #27272a;
+  --app-border-color: #3f3f46;
+  --app-text-color: #fafafa;
+  --app-muted-text-color: #a1a1aa;
+  --income-color: #34d399;
+  --expense-color: #fb7185;
+  --brand-primary: #34d399;
+  --brand-soft-bg: rgba(52, 211, 153, 0.1);
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--app-bg);
+  color: var(--app-text-color);
+  margin: 0;
+  font-family: Inter, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}

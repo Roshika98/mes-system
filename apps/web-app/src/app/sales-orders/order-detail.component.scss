@@ -1,0 +1,204 @@
+.order-detail-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+
+        &-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--app-muted-text-color);
+            margin-bottom: 0.5rem;
+
+            a {
+                color: var(--app-muted-text-color);
+                text-decoration: none;
+                transition: color 0.2s;
+
+                &:hover {
+                    color: var(--app-text-color);
+                }
+            }
+
+            .pi-chevron-right {
+                font-size: 0.625rem;
+            }
+
+            span {
+                font-family: monospace;
+            }
+        }
+
+        &-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+
+            .title {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: var(--app-text-color);
+                margin: 0 0 0.25rem 0;
+                letter-spacing: -0.025em;
+            }
+
+            .subtitle {
+                font-size: 0.875rem;
+                color: var(--app-muted-text-color);
+                margin: 0;
+            }
+        }
+    }
+
+    &__cost-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.25rem;
+
+        .cost-card {
+            background: var(--app-surface-color);
+            border: 1px solid var(--app-border-color);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            
+            &--total {
+                border-top: 4px solid var(--p-primary-500);
+            }
+
+            &-label {
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: var(--app-muted-text-color);
+                margin-bottom: 0.5rem;
+            }
+
+            &-value {
+                font-size: 1.75rem;
+                font-weight: 700;
+                color: var(--app-text-color);
+                font-family: monospace;
+
+                &.large {
+                    font-size: 2.25rem;
+                }
+            }
+
+            &-trend {
+                font-size: 0.75rem;
+                margin-top: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.25rem;
+
+                &--positive {
+                    color: var(--income-color);
+                }
+                
+                &--negative {
+                    color: var(--expense-color);
+                }
+                
+                .margin-val {
+                    color: var(--income-color);
+                    font-weight: 500;
+                }
+                
+                color: var(--app-muted-text-color);
+            }
+        }
+    }
+
+    &__tables-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+
+        @media (min-width: 1024px) {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .table-wrapper {
+            background: var(--app-surface-color);
+            border: 1px solid var(--app-border-color);
+            border-radius: 1rem;
+            
+            &-header {
+                padding: 1rem 1.25rem;
+                border-bottom: 1px solid var(--app-border-color);
+                font-size: 1rem;
+                font-weight: 600;
+                color: var(--app-text-color);
+                margin: 0;
+            }
+
+            /* Customizing PrimeNG Table inside wrapper */
+            ::ng-deep {
+                .p-datatable .p-datatable-thead > tr > th {
+                    background: transparent;
+                    border-bottom: 1px solid var(--app-border-color);
+                    color: var(--app-muted-text-color);
+                    font-size: 0.75rem;
+                    text-transform: uppercase;
+                    letter-spacing: 0.05em;
+                }
+
+                .p-datatable .p-datatable-tbody > tr {
+                    background: transparent;
+                    color: var(--app-text-color);
+                    
+                    > td {
+                        border-bottom: 1px solid var(--app-border-color);
+                        font-size: 0.875rem;
+                    }
+
+                    &:last-child > td {
+                        border-bottom: none;
+                    }
+                }
+            }
+        }
+    }
+
+    /* Table Specific utilities */
+    &__monetary {
+        font-family: monospace;
+        color: var(--app-muted-text-color);
+        
+        &--total {
+            color: var(--app-text-color);
+            font-weight: 500;
+        }
+        
+        &--warning {
+            color: var(--expense-color);
+            font-weight: 500;
+        }
+    }
+
+    &__user {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &-avatar {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background-color: var(--app-hover-bg);
+            border: 1px solid var(--app-border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.625rem;
+            font-weight: 700;
+            color: var(--app-muted-text-color);
+        }
+    }
+}

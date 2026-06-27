@@ -1,0 +1,149 @@
+<div class="dashboard-page">
+      
+  <!-- Header -->
+  <div class="dashboard-page__header">
+    <div>
+      <h1 class="title">Production Overview</h1>
+      <p class="subtitle">Real-time metrics for all active manufacturing runs.</p>
+    </div>
+    <div class="update-time">
+      Last updated: Just now
+    </div>
+  </div>
+
+  <!-- KPI Grid -->
+  <div class="dashboard-page__kpi-grid">
+    
+    <div class="kpi-card">
+      <div class="kpi-card-header">
+        <span class="label">Active Orders</span>
+        <i class="pi pi-shopping-cart icon"></i>
+      </div>
+      <div class="kpi-card-value">24</div>
+      <div class="kpi-card-trend kpi-card-trend--positive">
+        <i class="pi pi-arrow-up"></i>
+        <span>+3 this week</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card-header">
+        <span class="label">Current Run Rate</span>
+        <i class="pi pi-bolt icon"></i>
+      </div>
+      <div class="kpi-card-value">87%</div>
+      <div class="kpi-card-trend kpi-card-trend--warning">
+        <i class="pi pi-exclamation-triangle"></i>
+        <span>Machine A requires maint.</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card-header">
+        <span class="label">Labor Utilization</span>
+        <i class="pi pi-users icon"></i>
+      </div>
+      <div class="kpi-card-value">92%</div>
+      <div class="kpi-card-trend kpi-card-trend--positive">
+        <i class="pi pi-arrow-up"></i>
+        <span>Optimal capacity</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card-header">
+        <span class="label">Scrap Material Cost</span>
+        <i class="pi pi-trash icon"></i>
+      </div>
+      <div class="kpi-card-value">$1,240</div>
+      <div class="kpi-card-trend kpi-card-trend--negative">
+        <i class="pi pi-arrow-up"></i>
+        <span>+$240 over threshold</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="dashboard-page__main-grid">
+    
+    <!-- Left Col -->
+    <div class="card-wrapper">
+      <h2 class="card-wrapper-header">Critical Work Orders</h2>
+      
+      <div class="dashboard-page__wo-list">
+        <!-- Item 1 -->
+        <div class="wo-item">
+          <div class="wo-item-header">
+            <div>
+              <div class="wo-id">WO-2948</div>
+              <div class="wo-name">Industrial HVAC Assembly</div>
+            </div>
+            <p-tag severity="warn" value="Due: Today"></p-tag>
+          </div>
+          <div class="wo-item-progress">
+            <div class="progress-label">
+              <span>Progress</span>
+              <span class="value">75%</span>
+            </div>
+            <p-progressBar [value]="75" [showValue]="false" [style]="{height: '6px'}"></p-progressBar>
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="wo-item">
+          <div class="wo-item-header">
+            <div>
+              <div class="wo-id">WO-2949</div>
+              <div class="wo-name">Conveyor Belt System</div>
+            </div>
+            <p-tag severity="info" value="Due: Tomorrow"></p-tag>
+          </div>
+          <div class="wo-item-progress">
+            <div class="progress-label">
+              <span>Progress</span>
+              <span class="value">30%</span>
+            </div>
+            <p-progressBar [value]="30" [showValue]="false" [style]="{height: '6px'}"></p-progressBar>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Col -->
+    <div class="card-wrapper">
+      <h2 class="card-wrapper-header">Resource Utilization</h2>
+      
+      <ul class="dashboard-page__resource-list">
+        <li class="resource-item">
+          <div class="resource-item-info">
+            <div class="status-dot status-dot--active"></div>
+            <span class="name">CNC Machine A</span>
+          </div>
+          <span class="status-text">In Use</span>
+        </li>
+        <li class="resource-item">
+          <div class="resource-item-info">
+            <div class="status-dot status-dot--active"></div>
+            <span class="name">CNC Machine B</span>
+          </div>
+          <span class="status-text">In Use</span>
+        </li>
+        <li class="resource-item">
+          <div class="resource-item-info">
+            <div class="status-dot status-dot--maint"></div>
+            <span class="name">Lathe 01</span>
+          </div>
+          <span class="status-text">Maint.</span>
+        </li>
+        <li class="resource-item">
+          <div class="resource-item-info">
+            <div class="status-dot status-dot--idle"></div>
+            <span class="name">Assembly Line C</span>
+          </div>
+          <span class="status-text">Idle</span>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</div>

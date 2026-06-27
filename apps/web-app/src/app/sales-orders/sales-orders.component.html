@@ -1,0 +1,44 @@
+<div class="sales-orders-page">
+      
+  <!-- Header -->
+  <div class="sales-orders-page__header">
+    <div>
+      <h1 class="title">Sales Orders</h1>
+      <p class="subtitle">Manage and track customer orders and associated costs.</p>
+    </div>
+    <p-button label="New Order" icon="pi pi-plus" size="small"></p-button>
+  </div>
+
+  <!-- Data Table -->
+  <div class="sales-orders-page__content">
+    <p-table [value]="orders" [tableStyle]="{ 'min-width': '50rem' }" responsiveLayout="scroll">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Order ID</th>
+          <th>Customer</th>
+          <th>Order Date</th>
+          <th>Est. Material</th>
+          <th>Est. Labor</th>
+          <th style="text-align: right">Total Cost</th>
+          <th>Status</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-order>
+        <tr>
+          <td class="sales-orders-page__id">{{ order.id }}</td>
+          <td>{{ order.customer }}</td>
+          <td style="color: var(--app-muted-text-color)">{{ order.date }}</td>
+          <td class="sales-orders-page__monetary">\${{ order.materialCost | number:'1.2-2' }}</td>
+          <td class="sales-orders-page__monetary">\${{ order.laborCost | number:'1.2-2' }}</td>
+          <td class="sales-orders-page__monetary sales-orders-page__monetary--total" style="text-align: right">\${{ order.totalCost | number:'1.2-2' }}</td>
+          <td>
+            <p-tag [severity]="order.status === 'Production' ? 'info' : (order.status === 'Pending' ? 'secondary' : 'success')" 
+                   [value]="order.status">
+            </p-tag>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+</div>

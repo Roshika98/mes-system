@@ -1,0 +1,110 @@
+<div class="order-detail-page">
+      
+  <!-- Breadcrumb & Header -->
+  <div class="order-detail-page__header">
+    <div class="order-detail-page__header-breadcrumb">
+      <a routerLink="/sales-orders">Sales Orders</a>
+      <i class="pi pi-chevron-right"></i>
+      <span>SO-1092</span>
+    </div>
+    <div class="order-detail-page__header-main">
+      <div>
+        <h1 class="title">Industrial HVAC Assembly</h1>
+        <p class="subtitle">Acme Corp &bull; Ordered Oct 12, 2026</p>
+      </div>
+      <div>
+        <p-tag severity="info" value="In Production"></p-tag>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cost Rollup Overview -->
+  <div class="order-detail-page__cost-grid">
+    <div class="cost-card">
+      <div class="cost-card-label">Actual Materials Cost</div>
+      <div class="cost-card-value">$4,850.25</div>
+      <div class="cost-card-trend cost-card-trend--negative">
+        <i class="pi pi-arrow-up"></i>
+        <span>+$350.25 over estimate</span>
+      </div>
+    </div>
+    
+    <div class="cost-card">
+      <div class="cost-card-label">Actual Labor Cost</div>
+      <div class="cost-card-value">$1,100.00</div>
+      <div class="cost-card-trend cost-card-trend--positive">
+        <i class="pi pi-arrow-down"></i>
+        <span>-$100.50 under estimate</span>
+      </div>
+    </div>
+
+    <div class="cost-card cost-card--total">
+      <div class="cost-card-label">Total Job Cost</div>
+      <div class="cost-card-value large">$5,950.25</div>
+      <div class="cost-card-trend">
+        Est. Margin: <span class="margin-val">&nbsp;32.4%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Breakdown -->
+  <div class="order-detail-page__tables-grid">
+    
+    <!-- Materials -->
+    <div class="table-wrapper">
+      <h2 class="table-wrapper-header">Bill of Materials Used</h2>
+      <p-table [value]="materials" responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Part</th>
+            <th style="text-align: right">Qty</th>
+            <th style="text-align: right">Unit Cost</th>
+            <th style="text-align: right">Total</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-mat>
+          <tr>
+            <td>
+              {{ mat.part }}
+              <p-tag *ngIf="mat.note" severity="warn" [value]="mat.note" styleClass="ml-2" [style]="{'font-size':'0.625rem'}"></p-tag>
+            </td>
+            <td class="order-detail-page__monetary" style="text-align: right">{{ mat.qty }}</td>
+            <td class="order-detail-page__monetary" style="text-align: right">\${{ mat.unitCost | number:'1.2-2' }}</td>
+            <td class="order-detail-page__monetary order-detail-page__monetary--total" [class.order-detail-page__monetary--warning]="mat.note" style="text-align: right">
+              \${{ mat.total | number:'1.2-2' }}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <!-- Labor -->
+    <div class="table-wrapper">
+      <h2 class="table-wrapper-header">Labor Tracking</h2>
+      <p-table [value]="labor" responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Operator</th>
+            <th>Operation</th>
+            <th style="text-align: right">Hours</th>
+            <th style="text-align: right">Cost</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-work>
+          <tr>
+            <td>
+              <div class="order-detail-page__user">
+                <div class="order-detail-page__user-avatar">{{ work.initials }}</div>
+                <span>{{ work.name }}</span>
+              </div>
+            </td>
+            <td style="color: var(--app-muted-text-color)">{{ work.operation }}</td>
+            <td class="order-detail-page__monetary" style="text-align: right">{{ work.hours }}</td>
+            <td class="order-detail-page__monetary order-detail-page__monetary--total" style="text-align: right">\${{ work.cost | number:'1.2-2' }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+  </div>
+</div>
