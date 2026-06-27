@@ -1,0 +1,27 @@
+.app-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--app-surface-color);
+  border-bottom: 1px solid var(--app-border-color);
+  height: 4rem;
+
+  &__start {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__brand {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--app-text-color);
+  }
+
+  &__end {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}

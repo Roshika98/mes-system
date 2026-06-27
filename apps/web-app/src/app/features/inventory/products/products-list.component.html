@@ -1,0 +1,45 @@
+<div class="products-list">
+  <app-page-header title="Products & Variants" subtitle="Manage your product catalog and variants.">
+    <p-button label="Add Product" icon="pi pi-plus"></p-button>
+  </app-page-header>
+
+  <div class="products-list__table-container">
+    <p-table [value]="products" [paginator]="true" [rows]="10" styleClass="p-datatable-striped" responsiveLayout="scroll">
+      <ng-template pTemplate="caption">
+        <div class="products-list__table-header">
+          <span class="products-list__table-title">Product Catalog</span>
+          <p-iconfield>
+            <p-inputicon styleClass="pi pi-search"></p-inputicon>
+            <input type="text" pInputText placeholder="Search by SKU or Name..." />
+          </p-iconfield>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+        <tr>
+          <th>SKU</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>In Stock</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-product>
+        <tr>
+          <td class="products-list__sku">{{ product.sku }}</td>
+          <td class="products-list__name">{{ product.name }}</td>
+          <td>{{ product.category }}</td>
+          <td>{{ product.price | currency }}</td>
+          <td>{{ product.inStock }}</td>
+          <td>
+            <p-tag [value]="product.status" [severity]="getSeverity(product.status)"></p-tag>
+          </td>
+          <td>
+            <p-button icon="pi pi-ellipsis-v" [text]="true" [rounded]="true" severity="secondary"></p-button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>

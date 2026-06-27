@@ -1,0 +1,22 @@
+<div class="stat-card">
+  <div class="stat-card__header">
+    <span class="stat-card__label">{{ label }}</span>
+    @if (icon) {
+      <div class="stat-card__icon-wrapper">
+        <i class="stat-card__icon" [class]="icon"></i>
+      </div>
+    }
+  </div>
+  <div class="stat-card__body">
+    <span class="stat-card__value">{{ value }}</span>
+  </div>
+  @if (trend) {
+    <div class="stat-card__footer">
+      <span class="stat-card__trend" [ngClass]="'stat-card__trend--' + trend">
+        <i class="pi" [ngClass]="{'pi-arrow-up': trend === 'up', 'pi-arrow-down': trend === 'down', 'pi-minus': trend === 'neutral'}"></i>
+        {{ trendValue }}
+      </span>
+      <span class="stat-card__trend-label">vs last month</span>
+    </div>
+  }
+</div>

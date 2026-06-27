@@ -1,0 +1,25 @@
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.shell-body {
+  display: grid;
+  grid-template-columns: 18rem 1fr;
+  flex: 1;
+  overflow: hidden;
+
+  /* For screens smaller than 992px, sidebar becomes a drawer and grid is 1fr */
+  @media (max-width: 991.98px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.shell-content {
+  padding: 2rem;
+  overflow-y: auto;
+  background-color: var(--app-bg);
+  height: calc(100vh - 4rem); /* Topbar height */
+  box-sizing: border-box;
+}

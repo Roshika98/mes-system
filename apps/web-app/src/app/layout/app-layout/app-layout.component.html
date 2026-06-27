@@ -1,0 +1,9 @@
+<div class="app-layout">
+  <app-topbar (toggleSidebar)="toggleSidebar()"></app-topbar>
+  <div class="shell-body">
+    <app-sidebar [(mobileMenuVisible)]="sidebarVisible"></app-sidebar>
+    <main class="shell-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

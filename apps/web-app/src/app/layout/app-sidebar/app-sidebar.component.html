@@ -1,0 +1,42 @@
+<!-- Desktop Sidebar -->
+@if (!isMobileView) {
+  <aside class="app-sidebar">
+    <ng-container *ngTemplateOutlet="navContent"></ng-container>
+  </aside>
+}
+
+<!-- Mobile Sidebar -->
+@if (isMobileView) {
+  <p-drawer [(visible)]="mobileMenuVisible" (visibleChange)="mobileMenuVisibleChange.emit($event)" [modal]="true" [dismissible]="true" [showCloseIcon]="true" position="left" styleClass="sidebar-mobile-drawer">
+    <ng-template pTemplate="header">
+      <div class="sidebar-mobile-drawer__brand">Antigravity MES</div>
+    </ng-template>
+    <ng-container *ngTemplateOutlet="navContent"></ng-container>
+  </p-drawer>
+}
+
+<ng-template #navContent>
+  <nav class="sidebar-nav">
+    @for (section of navSections; track section.label) {
+      <div class="nav-section">
+        <button class="nav-section__header" (click)="toggleSection(section)" [class.nav-section__header--expanded]="section.expanded">
+          <div class="nav-section__header-content">
+            <i class="nav-section__icon" [class]="section.icon"></i>
+            <span class="nav-section__label">{{ section.label }}</span>
+          </div>
+          <i class="pi" [class.pi-chevron-down]="section.expanded" [class.pi-chevron-right]="!section.expanded"></i>
+        </button>
+        
+        @if (section.expanded) {
+          <div class="nav-section__items">
+            @for (item of section.items; track item.label) {
+              <a [routerLink]="item.routerLink" class="nav-item" routerLinkActive="nav-item-active" (click)="isMobileView ? mobileMenuVisibleChange.emit(false) : null">
+                <span>{{ item.label }}</span>
+              </a>
+            }
+          </div>
+        }
+      </div>
+    }
+  </nav>
+</ng-template>

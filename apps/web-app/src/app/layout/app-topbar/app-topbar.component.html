@@ -1,0 +1,13 @@
+<header class="app-topbar">
+  <div class="app-topbar__start">
+    <p-button styleClass="menu-toggle" icon="pi pi-bars" [text]="true" [rounded]="true" (onClick)="toggleSidebar.emit()"></p-button>
+    <div class="app-topbar__brand">
+      <span class="app-topbar__logo">Antigravity MES</span>
+    </div>
+  </div>
+  <div class="app-topbar__end">
+    <p-button [icon]="isDarkMode ? 'pi pi-sun' : 'pi pi-moon'" [rounded]="true" [text]="true" severity="secondary" (onClick)="toggleTheme()"></p-button>
+    <p-button icon="pi pi-bell" [rounded]="true" [text]="true" severity="secondary"></p-button>
+    <p-button icon="pi pi-user" [text]="true" [rounded]="true" severity="secondary"></p-button>
+  </div>
+</header>
