@@ -16,7 +16,8 @@
     "paths": {
       "@mes-system/shared-types": ["./libs/shared-types/src/index.ts"],
       "@mes-system/database": ["./libs/database/src/index.ts"],
-      "@mes-system/inventory": ["./libs/inventory/src/index.ts"]
+      "@mes-system/inventory": ["./libs/inventory/src/index.ts"],
+      "@mes-system/server-auth": ["./libs/server-auth/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

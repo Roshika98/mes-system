@@ -14,6 +14,7 @@ import {
 export interface GraphQLContext {
   tenantId: string;
   userId: string;
+  roles: string[];
   services: {
     productService: ProductService;
     categoryService: CategoryService;

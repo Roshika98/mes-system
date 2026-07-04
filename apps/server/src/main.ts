@@ -4,6 +4,8 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express5';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { GraphQLError } from 'graphql';
+import passport from 'passport';
+import { configurePassport, authMiddleware } from '@mes-system/server-auth';
 
 import { TenantConnectionManager } from '@mes-system/database';
 import {
@@ -47,17 +49,23 @@ async function bootstrap() {
   // ---------------------------------------------------------------------------
   app.use(express.json());
 
+  configurePassport();
+  app.use(passport.initialize());
+
   app.get('/', (_req, res) => {
     res.send({ message: 'MES System API', graphql: '/graphql' });
   });
 
   app.use(
     '/graphql',
+    authMiddleware,
     expressMiddleware(apolloServer, {
       context: async ({ req }): Promise<GraphQLContext> => {
         // Extract multi-tenancy tracking from request headers
         const tenantId = req.headers['x-tenant-id'] as string;
-        const userId = req.headers['x-user-id'] as string;
+        const user = (req as any).user;
+        const userId = user?.sub || (req.headers['x-user-id'] as string);
+        const roles = user?.realm_access?.roles || [];
 
         // Bypass header requirements for Apollo Sandbox Introspection queries
         if (req.body?.operationName === 'IntrospectionQuery') {
@@ -65,9 +73,12 @@ async function bootstrap() {
         }
 
         if (!tenantId || !userId) {
-          throw new GraphQLError('Missing x-tenant-id or x-user-id header', {
-            extensions: { code: 'UNAUTHENTICATED', http: { status: 401 } },
-          });
+          throw new GraphQLError(
+            'Missing x-tenant-id or valid authentication',
+            {
+              extensions: { code: 'UNAUTHENTICATED', http: { status: 401 } },
+            },
+          );
         }
 
         // Get the specific database connection for this tenant
@@ -99,6 +110,7 @@ async function bootstrap() {
         return {
           tenantId,
           userId,
+          roles,
           services: {
             productService,
             categoryService,
@@ -108,7 +120,7 @@ async function bootstrap() {
           },
         };
       },
-    })
+    }),
   );
 
   // ---------------------------------------------------------------------------
