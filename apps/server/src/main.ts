@@ -41,6 +41,7 @@ async function bootstrap() {
   const apolloServer = new ApolloServer<GraphQLContext>({
     schema,
     introspection: true,
+    includeStacktraceInErrorResponses: false,
   });
   await apolloServer.start();
 
