@@ -7,7 +7,7 @@
  */
 
 // Connection management
-export { getDb, getPool, closeDb } from './connection';
+export { TenantConnectionManager } from './connection';
 
 // Schema tables and relations
 export * from './schema';

@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import {
   productVariants,
@@ -15,7 +15,7 @@ export interface CreateProductVariantInput {
   sku: string;
   barcode?: string | null;
   uomId: string;
-  price: string; // Drizzle decimal comes in as string
+  price: string;
   routingId?: string | null;
 }
 
@@ -28,20 +28,34 @@ export interface UpdateProductVariantInput {
 }
 
 export class ProductVariantRepository {
-  constructor(private db: Db) {}
+  constructor(
+    private db: Db,
+    private tenantId: string,
+    private userId: string
+  ) {}
 
   async findByProductId(productId: string) {
     return this.db
       .select()
       .from(productVariants)
-      .where(eq(productVariants.productId, productId));
+      .where(
+        and(
+          eq(productVariants.productId, productId),
+          eq(productVariants.tenantId, this.tenantId)
+        )
+      );
   }
 
   async findById(id: string) {
     const result = await this.db
       .select()
       .from(productVariants)
-      .where(eq(productVariants.id, id));
+      .where(
+        and(
+          eq(productVariants.id, id),
+          eq(productVariants.tenantId, this.tenantId)
+        )
+      );
     return result[0] ?? null;
   }
 
@@ -49,7 +63,12 @@ export class ProductVariantRepository {
     const result = await this.db
       .select()
       .from(productVariants)
-      .where(eq(productVariants.sku, sku));
+      .where(
+        and(
+          eq(productVariants.sku, sku),
+          eq(productVariants.tenantId, this.tenantId)
+        )
+      );
     return result[0] ?? null;
   }
 
@@ -63,13 +82,18 @@ export class ProductVariantRepository {
         uomId: input.uomId,
         price: input.price,
         routingId: input.routingId ?? null,
+        tenantId: this.tenantId,
+        createdBy: this.userId,
+        updatedBy: this.userId,
       })
       .returning();
     return result[0];
   }
 
   async update(id: string, input: UpdateProductVariantInput) {
-    const updateData: Record<string, unknown> = {};
+    const updateData: Record<string, unknown> = {
+      updatedBy: this.userId,
+    };
     if (input.sku !== undefined) updateData['sku'] = input.sku;
     if (input.barcode !== undefined) updateData['barcode'] = input.barcode;
     if (input.uomId !== undefined) updateData['uomId'] = input.uomId;
@@ -79,7 +103,12 @@ export class ProductVariantRepository {
     const result = await this.db
       .update(productVariants)
       .set(updateData)
-      .where(eq(productVariants.id, id))
+      .where(
+        and(
+          eq(productVariants.id, id),
+          eq(productVariants.tenantId, this.tenantId)
+        )
+      )
       .returning();
     return result[0] ?? null;
   }
@@ -87,7 +116,12 @@ export class ProductVariantRepository {
   async delete(id: string): Promise<boolean> {
     const result = await this.db
       .delete(productVariants)
-      .where(eq(productVariants.id, id))
+      .where(
+        and(
+          eq(productVariants.id, id),
+          eq(productVariants.tenantId, this.tenantId)
+        )
+      )
       .returning({ id: productVariants.id });
     return result.length > 0;
   }
@@ -98,24 +132,42 @@ export class ProductVariantRepository {
  * Used by field resolvers on ProductVariant.
  */
 export class UnitOfMeasureRepository {
-  constructor(private db: Db) {}
+  constructor(
+    private db: Db,
+    private tenantId: string,
+    private userId: string
+  ) {}
 
   async findAll() {
-    return this.db.select().from(unitOfMeasures);
+    return this.db
+      .select()
+      .from(unitOfMeasures)
+      .where(eq(unitOfMeasures.tenantId, this.tenantId));
   }
 
   async findById(id: string) {
     const result = await this.db
       .select()
       .from(unitOfMeasures)
-      .where(eq(unitOfMeasures.id, id));
+      .where(
+        and(
+          eq(unitOfMeasures.id, id),
+          eq(unitOfMeasures.tenantId, this.tenantId)
+        )
+      );
     return result[0] ?? null;
   }
 
   async create(input: { code: string; name: string }) {
     const result = await this.db
       .insert(unitOfMeasures)
-      .values({ code: input.code, name: input.name })
+      .values({
+        code: input.code,
+        name: input.name,
+        tenantId: this.tenantId,
+        createdBy: this.userId,
+        updatedBy: this.userId,
+      })
       .returning();
     return result[0];
   }
@@ -126,7 +178,11 @@ export class UnitOfMeasureRepository {
  * Used by the ProductVariant.attributes field resolver.
  */
 export class ProductVariantAttributeRepository {
-  constructor(private db: Db) {}
+  constructor(
+    private db: Db,
+    private tenantId: string,
+    private userId: string
+  ) {}
 
   async findByVariantId(productVariantId: string) {
     return this.db
@@ -142,7 +198,10 @@ export class ProductVariantAttributeRepository {
         eq(productVariantAttributes.attributeId, productAttributes.id)
       )
       .where(
-        eq(productVariantAttributes.productVariantId, productVariantId)
+        and(
+          eq(productVariantAttributes.productVariantId, productVariantId),
+          eq(productVariantAttributes.tenantId, this.tenantId)
+        )
       );
   }
 }

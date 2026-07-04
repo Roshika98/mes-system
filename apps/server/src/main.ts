@@ -4,7 +4,7 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express5';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 
-import { getDb } from '@mes-system/database';
+import { TenantConnectionManager } from '@mes-system/database';
 import {
   inventoryTypeDefs,
   inventoryResolvers,
@@ -26,34 +26,6 @@ async function bootstrap() {
   const port = process.env['PORT'] ? Number(process.env['PORT']) : 3000;
 
   const app = express();
-
-  // ---------------------------------------------------------------------------
-  // Database
-  // ---------------------------------------------------------------------------
-  const db = getDb();
-
-  // ---------------------------------------------------------------------------
-  // Repositories
-  // ---------------------------------------------------------------------------
-  const productRepo = new ProductRepository(db);
-  const categoryRepo = new CategoryRepository(db);
-  const variantRepo = new ProductVariantRepository(db);
-  const uomRepo = new UnitOfMeasureRepository(db);
-  const variantAttrRepo = new ProductVariantAttributeRepository(db);
-
-  // ---------------------------------------------------------------------------
-  // Services
-  // ---------------------------------------------------------------------------
-  const productService = new ProductService(productRepo, categoryRepo);
-  const categoryService = new CategoryService(categoryRepo);
-  const productVariantService = new ProductVariantService(
-    variantRepo,
-    productRepo,
-    uomRepo
-  );
-  const unitOfMeasureService = new UnitOfMeasureService(uomRepo);
-  const productVariantAttributeService =
-    new ProductVariantAttributeService(variantAttrRepo);
 
   // ---------------------------------------------------------------------------
   // GraphQL Schema
@@ -78,15 +50,53 @@ async function bootstrap() {
   app.use(
     '/graphql',
     expressMiddleware(apolloServer, {
-      context: async (): Promise<GraphQLContext> => ({
-        services: {
-          productService,
-          categoryService,
-          productVariantService,
-          unitOfMeasureService,
-          productVariantAttributeService,
-        },
-      }),
+      context: async ({ req }): Promise<GraphQLContext> => {
+        // Extract multi-tenancy tracking from request headers
+        const tenantId = req.headers['x-tenant-id'] as string;
+        const userId = req.headers['x-user-id'] as string;
+
+        if (!tenantId || !userId) {
+          throw new Error('Missing x-tenant-id or x-user-id header');
+        }
+
+        // Get the specific database connection for this tenant
+        const db = await TenantConnectionManager.getDbForTenant(tenantId);
+
+        // Instantiate Repositories strictly scoped to this request's tenant
+        const productRepo = new ProductRepository(db, tenantId, userId);
+        const categoryRepo = new CategoryRepository(db, tenantId, userId);
+        const variantRepo = new ProductVariantRepository(db, tenantId, userId);
+        const uomRepo = new UnitOfMeasureRepository(db, tenantId, userId);
+        const variantAttrRepo = new ProductVariantAttributeRepository(
+          db,
+          tenantId,
+          userId
+        );
+
+        // Instantiate Services for this request
+        const productService = new ProductService(productRepo, categoryRepo);
+        const categoryService = new CategoryService(categoryRepo);
+        const productVariantService = new ProductVariantService(
+          variantRepo,
+          productRepo,
+          uomRepo
+        );
+        const unitOfMeasureService = new UnitOfMeasureService(uomRepo);
+        const productVariantAttributeService =
+          new ProductVariantAttributeService(variantAttrRepo);
+
+        return {
+          tenantId,
+          userId,
+          services: {
+            productService,
+            categoryService,
+            productVariantService,
+            unitOfMeasureService,
+            productVariantAttributeService,
+          },
+        };
+      },
     })
   );
 

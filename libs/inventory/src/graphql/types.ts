@@ -12,6 +12,8 @@ import {
  * Apollo middleware setup, making them available to every resolver.
  */
 export interface GraphQLContext {
+  tenantId: string;
+  userId: string;
   services: {
     productService: ProductService;
     categoryService: CategoryService;

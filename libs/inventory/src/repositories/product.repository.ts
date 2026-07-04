@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { products, categories } from '@mes-system/database';
 
@@ -20,30 +20,37 @@ export interface UpdateProductInput {
 }
 
 export class ProductRepository {
-  constructor(private db: Db) {}
+  constructor(
+    private db: Db,
+    private tenantId: string,
+    private userId: string
+  ) {}
 
   async findAll(filters?: {
     categoryId?: string;
     isManufactured?: boolean;
   }) {
-    let query = this.db.select().from(products).$dynamic();
+    const conditions = [eq(products.tenantId, this.tenantId)];
 
     if (filters?.categoryId) {
-      query = query.where(eq(products.categoryId, filters.categoryId));
+      conditions.push(eq(products.categoryId, filters.categoryId));
     }
 
     if (filters?.isManufactured !== undefined) {
-      query = query.where(eq(products.isManufactured, filters.isManufactured));
+      conditions.push(eq(products.isManufactured, filters.isManufactured));
     }
 
-    return query;
+    return this.db
+      .select()
+      .from(products)
+      .where(and(...conditions));
   }
 
   async findById(id: string) {
     const result = await this.db
       .select()
       .from(products)
-      .where(eq(products.id, id));
+      .where(and(eq(products.id, id), eq(products.tenantId, this.tenantId)));
     return result[0] ?? null;
   }
 
@@ -55,13 +62,18 @@ export class ProductRepository {
         categoryId: input.categoryId,
         description: input.description ?? null,
         isManufactured: input.isManufactured,
+        tenantId: this.tenantId,
+        createdBy: this.userId,
+        updatedBy: this.userId,
       })
       .returning();
     return result[0];
   }
 
   async update(id: string, input: UpdateProductInput) {
-    const updateData: Record<string, unknown> = {};
+    const updateData: Record<string, unknown> = {
+      updatedBy: this.userId,
+    };
     if (input.name !== undefined) updateData['name'] = input.name;
     if (input.categoryId !== undefined) updateData['categoryId'] = input.categoryId;
     if (input.description !== undefined) updateData['description'] = input.description;
@@ -70,7 +82,7 @@ export class ProductRepository {
     const result = await this.db
       .update(products)
       .set(updateData)
-      .where(eq(products.id, id))
+      .where(and(eq(products.id, id), eq(products.tenantId, this.tenantId)))
       .returning();
     return result[0] ?? null;
   }
@@ -78,7 +90,7 @@ export class ProductRepository {
   async delete(id: string): Promise<boolean> {
     const result = await this.db
       .delete(products)
-      .where(eq(products.id, id))
+      .where(and(eq(products.id, id), eq(products.tenantId, this.tenantId)))
       .returning({ id: products.id });
     return result.length > 0;
   }
@@ -89,36 +101,54 @@ export class ProductRepository {
  * Used by field resolvers on Product.
  */
 export class CategoryRepository {
-  constructor(private db: Db) {}
+  constructor(
+    private db: Db,
+    private tenantId: string,
+    private userId: string
+  ) {}
 
   async findAll() {
-    return this.db.select().from(categories);
+    return this.db
+      .select()
+      .from(categories)
+      .where(eq(categories.tenantId, this.tenantId));
   }
 
   async findById(id: string) {
     const result = await this.db
       .select()
       .from(categories)
-      .where(eq(categories.id, id));
+      .where(
+        and(eq(categories.id, id), eq(categories.tenantId, this.tenantId))
+      );
     return result[0] ?? null;
   }
 
   async create(input: { name: string }) {
     const result = await this.db
       .insert(categories)
-      .values({ name: input.name })
+      .values({
+        name: input.name,
+        tenantId: this.tenantId,
+        createdBy: this.userId,
+        updatedBy: this.userId,
+      })
       .returning();
     return result[0];
   }
 
   async update(id: string, input: { name?: string }) {
-    const updateData: Record<string, unknown> = {};
+    const updateData: Record<string, unknown> = {
+      updatedBy: this.userId,
+    };
     if (input.name !== undefined) updateData['name'] = input.name;
 
     const result = await this.db
       .update(categories)
       .set(updateData)
-      .where(eq(categories.id, id))
+      .where(
+        and(eq(categories.id, id), eq(categories.tenantId, this.tenantId))
+      )
       .returning();
     return result[0] ?? null;
   }
@@ -126,7 +156,9 @@ export class CategoryRepository {
   async delete(id: string): Promise<boolean> {
     const result = await this.db
       .delete(categories)
-      .where(eq(categories.id, id))
+      .where(
+        and(eq(categories.id, id), eq(categories.tenantId, this.tenantId))
+      )
       .returning({ id: categories.id });
     return result.length > 0;
   }

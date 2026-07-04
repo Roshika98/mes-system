@@ -6,8 +6,15 @@ import {
   boolean,
   decimal,
   primaryKey,
+  unique,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+
+const auditColumns = {
+  tenantId: uuid('tenant_id').notNull(),
+  createdBy: uuid('created_by').notNull(),
+  updatedBy: uuid('updated_by').notNull(),
+};
 
 // ---------------------------------------------------------------------------
 // Tables
@@ -16,6 +23,7 @@ import { relations } from 'drizzle-orm';
 export const categories = pgTable('categories', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
+  ...auditColumns,
 });
 
 export const products = pgTable('products', {
@@ -26,31 +34,43 @@ export const products = pgTable('products', {
     .notNull(),
   description: text('description'),
   isManufactured: boolean('is_manufactured').notNull().default(false),
+  ...auditColumns,
 });
 
-export const unitOfMeasures = pgTable('unit_of_measures', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  code: varchar('code', { length: 50 }).notNull().unique(),
-  name: varchar('name', { length: 255 }).notNull(),
-});
+export const unitOfMeasures = pgTable(
+  'unit_of_measures',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    code: varchar('code', { length: 50 }).notNull(),
+    name: varchar('name', { length: 255 }).notNull(),
+    ...auditColumns,
+  },
+  (t) => [unique('uom_tenant_code_idx').on(t.tenantId, t.code)],
+);
 
-export const productVariants = pgTable('product_variants', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  productId: uuid('product_id')
-    .references(() => products.id)
-    .notNull(),
-  sku: varchar('sku', { length: 255 }).notNull().unique(),
-  barcode: varchar('barcode', { length: 255 }),
-  uomId: uuid('uom_id')
-    .references(() => unitOfMeasures.id)
-    .notNull(),
-  price: decimal('price', { precision: 12, scale: 2 }).notNull(),
-  routingId: uuid('routing_id'),
-});
+export const productVariants = pgTable(
+  'product_variants',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    productId: uuid('product_id')
+      .references(() => products.id)
+      .notNull(),
+    sku: varchar('sku', { length: 255 }).notNull(),
+    barcode: varchar('barcode', { length: 255 }),
+    uomId: uuid('uom_id')
+      .references(() => unitOfMeasures.id)
+      .notNull(),
+    price: decimal('price', { precision: 12, scale: 2 }).notNull(),
+    routingId: uuid('routing_id'),
+    ...auditColumns,
+  },
+  (t) => [unique('variant_tenant_sku_idx').on(t.tenantId, t.sku)],
+);
 
 export const productAttributes = pgTable('product_attributes', {
   id: uuid('id').defaultRandom().primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
+  ...auditColumns,
 });
 
 export const productVariantAttributes = pgTable(
@@ -63,8 +83,9 @@ export const productVariantAttributes = pgTable(
       .references(() => productAttributes.id)
       .notNull(),
     value: varchar('value', { length: 255 }).notNull(),
+    ...auditColumns,
   },
-  (table) => [primaryKey({ columns: [table.productVariantId, table.attributeId] })]
+  (t) => [primaryKey({ columns: [t.productVariantId, t.attributeId] })],
 );
 
 // ---------------------------------------------------------------------------
