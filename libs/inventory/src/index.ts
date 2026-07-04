@@ -18,6 +18,11 @@ export {
   ProductVariantService,
   UnitOfMeasureService,
   ProductVariantAttributeService,
+  WarehouseService,
+  LocationService,
+  StockService,
+  SerialNumberService,
+  StockMovementService,
 } from './services';
 
 // Repositories
@@ -27,4 +32,10 @@ export {
   ProductVariantRepository,
   UnitOfMeasureRepository,
   ProductVariantAttributeRepository,
+  WarehouseRepository,
+  LocationRepository,
+  StockRepository,
+  SerialNumberRepository,
+  StockMovementRepository,
 } from './repositories';
+

@@ -123,6 +123,9 @@ export const productVariantsRelations = relations(
       references: [unitOfMeasures.id],
     }),
     attributes: many(productVariantAttributes),
+    stocks: many(stocks),
+    serialNumbers: many(serialNumbers),
+    stockMovements: many(stockMovements),
   })
 );
 
@@ -146,3 +149,172 @@ export const productVariantAttributesRelations = relations(
     }),
   })
 );
+
+// ---------------------------------------------------------------------------
+// Warehouse & Stock Tables
+// ---------------------------------------------------------------------------
+
+export const warehouses = pgTable('warehouses', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: varchar('name', { length: 255 }).notNull(),
+  location: varchar('location', { length: 255 }),
+  ...auditColumns,
+});
+
+export const locations = pgTable('locations', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  warehouseId: uuid('warehouse_id')
+    .references(() => warehouses.id)
+    .notNull(),
+  name: varchar('name', { length: 255 }).notNull(),
+  description: text('description'),
+  ...auditColumns,
+});
+
+export const stocks = pgTable(
+  'stocks',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    productVariantId: uuid('product_variant_id')
+      .references(() => productVariants.id)
+      .notNull(),
+    warehouseId: uuid('warehouse_id')
+      .references(() => warehouses.id)
+      .notNull(),
+    locationId: uuid('location_id')
+      .references(() => locations.id)
+      .notNull(),
+    quantity: decimal('quantity', { precision: 12, scale: 4 }).notNull().default('0.0000'),
+    batchNumber: varchar('batch_number', { length: 255 }),
+    status: varchar('status', { length: 50 }).notNull().default('AVAILABLE'),
+    ...auditColumns,
+  },
+  (t) => [
+    unique('stock_tenant_variant_warehouse_location_batch_idx').on(
+      t.tenantId,
+      t.productVariantId,
+      t.warehouseId,
+      t.locationId,
+      t.batchNumber
+    ),
+  ]
+);
+
+export const serialNumbers = pgTable(
+  'serial_numbers',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    productVariantId: uuid('product_variant_id')
+      .references(() => productVariants.id)
+      .notNull(),
+    serialNumber: varchar('serial_number', { length: 255 }).notNull(),
+    status: varchar('status', { length: 50 }).notNull().default('AVAILABLE'),
+    currentWarehouseId: uuid('current_warehouse_id').references(() => warehouses.id),
+    currentLocationId: uuid('current_location_id').references(() => locations.id),
+    ...auditColumns,
+  },
+  (t) => [unique('serial_number_tenant_idx').on(t.tenantId, t.serialNumber)]
+);
+
+export const stockMovements = pgTable('stock_movements', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  productVariantId: uuid('product_variant_id')
+    .references(() => productVariants.id)
+    .notNull(),
+  fromWarehouseId: uuid('from_warehouse_id').references(() => warehouses.id),
+  fromLocationId: uuid('from_location_id').references(() => locations.id),
+  toWarehouseId: uuid('to_warehouse_id').references(() => warehouses.id),
+  toLocationId: uuid('to_location_id').references(() => locations.id),
+  quantity: decimal('quantity', { precision: 12, scale: 4 }).notNull(),
+  movementType: varchar('movement_type', { length: 50 }).notNull(), // RECEIPT, ISSUE, TRANSFER, ADJUSTMENT
+  relatedOrderType: varchar('related_order_type', { length: 50 }),
+  relatedOrderId: uuid('related_order_id'),
+  batchNumber: varchar('batch_number', { length: 255 }),
+  serialNumberId: uuid('serial_number_id').references(() => serialNumbers.id),
+  notes: text('notes'),
+  ...auditColumns,
+});
+
+// ---------------------------------------------------------------------------
+// Warehouse & Stock Relations
+// ---------------------------------------------------------------------------
+
+export const warehousesRelations = relations(warehouses, ({ many }) => ({
+  locations: many(locations),
+  stocks: many(stocks),
+  fromMovements: many(stockMovements, { relationName: 'fromWarehouse' }),
+  toMovements: many(stockMovements, { relationName: 'toWarehouse' }),
+}));
+
+export const locationsRelations = relations(locations, ({ one, many }) => ({
+  warehouse: one(warehouses, {
+    fields: [locations.warehouseId],
+    references: [warehouses.id],
+  }),
+  stocks: many(stocks),
+  fromMovements: many(stockMovements, { relationName: 'fromLocation' }),
+  toMovements: many(stockMovements, { relationName: 'toLocation' }),
+}));
+
+export const stocksRelations = relations(stocks, ({ one }) => ({
+  productVariant: one(productVariants, {
+    fields: [stocks.productVariantId],
+    references: [productVariants.id],
+  }),
+  warehouse: one(warehouses, {
+    fields: [stocks.warehouseId],
+    references: [warehouses.id],
+  }),
+  location: one(locations, {
+    fields: [stocks.locationId],
+    references: [locations.id],
+  }),
+}));
+
+export const serialNumbersRelations = relations(serialNumbers, ({ one, many }) => ({
+  productVariant: one(productVariants, {
+    fields: [serialNumbers.productVariantId],
+    references: [productVariants.id],
+  }),
+  currentWarehouse: one(warehouses, {
+    fields: [serialNumbers.currentWarehouseId],
+    references: [warehouses.id],
+  }),
+  currentLocation: one(locations, {
+    fields: [serialNumbers.currentLocationId],
+    references: [locations.id],
+  }),
+  movements: many(stockMovements),
+}));
+
+export const stockMovementsRelations = relations(stockMovements, ({ one }) => ({
+  productVariant: one(productVariants, {
+    fields: [stockMovements.productVariantId],
+    references: [productVariants.id],
+  }),
+  fromWarehouse: one(warehouses, {
+    fields: [stockMovements.fromWarehouseId],
+    references: [warehouses.id],
+    relationName: 'fromWarehouse',
+  }),
+  fromLocation: one(locations, {
+    fields: [stockMovements.fromLocationId],
+    references: [locations.id],
+    relationName: 'fromLocation',
+  }),
+  toWarehouse: one(warehouses, {
+    fields: [stockMovements.toWarehouseId],
+    references: [warehouses.id],
+    relationName: 'toWarehouse',
+  }),
+  toLocation: one(locations, {
+    fields: [stockMovements.toLocationId],
+    references: [locations.id],
+    relationName: 'toLocation',
+  }),
+  serialNumber: one(serialNumbers, {
+    fields: [stockMovements.serialNumberId],
+    references: [serialNumbers.id],
+  }),
+}));
+

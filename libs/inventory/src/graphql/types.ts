@@ -4,6 +4,11 @@ import {
   ProductVariantService,
   UnitOfMeasureService,
   ProductVariantAttributeService,
+  WarehouseService,
+  LocationService,
+  StockService,
+  SerialNumberService,
+  StockMovementService,
 } from '../services';
 
 /**
@@ -21,5 +26,11 @@ export interface GraphQLContext {
     productVariantService: ProductVariantService;
     unitOfMeasureService: UnitOfMeasureService;
     productVariantAttributeService: ProductVariantAttributeService;
+    warehouseService: WarehouseService;
+    locationService: LocationService;
+    stockService: StockService;
+    serialNumberService: SerialNumberService;
+    stockMovementService: StockMovementService;
   };
 }
+
