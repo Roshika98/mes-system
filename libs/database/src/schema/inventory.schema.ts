@@ -7,6 +7,7 @@ import {
   decimal,
   primaryKey,
   unique,
+  timestamp,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -14,6 +15,8 @@ const auditColumns = {
   tenantId: uuid('tenant_id').notNull(),
   createdBy: uuid('created_by').notNull(),
   updatedBy: uuid('updated_by').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 };
 
 // ---------------------------------------------------------------------------

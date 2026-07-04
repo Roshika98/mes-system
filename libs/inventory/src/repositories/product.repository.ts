@@ -73,6 +73,7 @@ export class ProductRepository {
   async update(id: string, input: UpdateProductInput) {
     const updateData: Record<string, unknown> = {
       updatedBy: this.userId,
+      updatedAt: new Date(),
     };
     if (input.name !== undefined) updateData['name'] = input.name;
     if (input.categoryId !== undefined) updateData['categoryId'] = input.categoryId;
@@ -140,6 +141,7 @@ export class CategoryRepository {
   async update(id: string, input: { name?: string }) {
     const updateData: Record<string, unknown> = {
       updatedBy: this.userId,
+      updatedAt: new Date(),
     };
     if (input.name !== undefined) updateData['name'] = input.name;
 

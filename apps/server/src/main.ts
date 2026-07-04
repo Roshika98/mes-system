@@ -3,6 +3,7 @@ import express from 'express';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express5';
 import { makeExecutableSchema } from '@graphql-tools/schema';
+import { GraphQLError } from 'graphql';
 
 import { TenantConnectionManager } from '@mes-system/database';
 import {
@@ -35,7 +36,10 @@ async function bootstrap() {
     resolvers: inventoryResolvers,
   });
 
-  const apolloServer = new ApolloServer<GraphQLContext>({ schema });
+  const apolloServer = new ApolloServer<GraphQLContext>({
+    schema,
+    introspection: true,
+  });
   await apolloServer.start();
 
   // ---------------------------------------------------------------------------
@@ -55,8 +59,15 @@ async function bootstrap() {
         const tenantId = req.headers['x-tenant-id'] as string;
         const userId = req.headers['x-user-id'] as string;
 
+        // Bypass header requirements for Apollo Sandbox Introspection queries
+        if (req.body?.operationName === 'IntrospectionQuery') {
+          return {} as GraphQLContext;
+        }
+
         if (!tenantId || !userId) {
-          throw new Error('Missing x-tenant-id or x-user-id header');
+          throw new GraphQLError('Missing x-tenant-id or x-user-id header', {
+            extensions: { code: 'UNAUTHENTICATED', http: { status: 401 } },
+          });
         }
 
         // Get the specific database connection for this tenant
@@ -70,7 +81,7 @@ async function bootstrap() {
         const variantAttrRepo = new ProductVariantAttributeRepository(
           db,
           tenantId,
-          userId
+          userId,
         );
 
         // Instantiate Services for this request
@@ -79,7 +90,7 @@ async function bootstrap() {
         const productVariantService = new ProductVariantService(
           variantRepo,
           productRepo,
-          uomRepo
+          uomRepo,
         );
         const unitOfMeasureService = new UnitOfMeasureService(uomRepo);
         const productVariantAttributeService =

@@ -93,6 +93,7 @@ export class ProductVariantRepository {
   async update(id: string, input: UpdateProductVariantInput) {
     const updateData: Record<string, unknown> = {
       updatedBy: this.userId,
+      updatedAt: new Date(),
     };
     if (input.sku !== undefined) updateData['sku'] = input.sku;
     if (input.barcode !== undefined) updateData['barcode'] = input.barcode;
