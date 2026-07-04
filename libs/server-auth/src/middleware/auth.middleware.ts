@@ -9,12 +9,12 @@ export const authMiddleware = (
   passport.authenticate(
     'keycloak',
     { session: false },
-    (err: any, user: any) => {
+    (err: Error | null, user: Express.User | false | null) => {
       if (err) {
         return next(err);
       }
       if (user) {
-        (req as any).user = user;
+        req.user = user;
       }
       next();
     },

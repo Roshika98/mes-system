@@ -3,6 +3,7 @@ import {
   Strategy as JwtStrategy,
   ExtractJwt,
   StrategyOptions,
+  StrategyOptionsWithoutRequest,
 } from 'passport-jwt';
 import * as jwksRsa from 'jwks-rsa';
 
@@ -18,12 +19,12 @@ const options: StrategyOptions = {
     rateLimit: true,
     jwksRequestsPerMinute: 5,
     jwksUri: `${KEYCLOAK_REALM_URL}/protocol/openid-connect/certs`,
-  }) as any,
+  }),
 
   audience: KEYCLOAK_CLIENT_ID,
   issuer: KEYCLOAK_REALM_URL,
   algorithms: ['RS256'],
-};
+} as StrategyOptionsWithoutRequest;
 
 export const keycloakJwtStrategy = new JwtStrategy(
   options,
