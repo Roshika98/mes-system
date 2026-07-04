@@ -1,0 +1,124 @@
+import {
+  pgTable,
+  uuid,
+  varchar,
+  text,
+  boolean,
+  decimal,
+  primaryKey,
+} from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
+
+// ---------------------------------------------------------------------------
+// Tables
+// ---------------------------------------------------------------------------
+
+export const categories = pgTable('categories', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: varchar('name', { length: 255 }).notNull(),
+});
+
+export const products = pgTable('products', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: varchar('name', { length: 255 }).notNull(),
+  categoryId: uuid('category_id')
+    .references(() => categories.id)
+    .notNull(),
+  description: text('description'),
+  isManufactured: boolean('is_manufactured').notNull().default(false),
+});
+
+export const unitOfMeasures = pgTable('unit_of_measures', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  code: varchar('code', { length: 50 }).notNull().unique(),
+  name: varchar('name', { length: 255 }).notNull(),
+});
+
+export const productVariants = pgTable('product_variants', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  productId: uuid('product_id')
+    .references(() => products.id)
+    .notNull(),
+  sku: varchar('sku', { length: 255 }).notNull().unique(),
+  barcode: varchar('barcode', { length: 255 }),
+  uomId: uuid('uom_id')
+    .references(() => unitOfMeasures.id)
+    .notNull(),
+  price: decimal('price', { precision: 12, scale: 2 }).notNull(),
+  routingId: uuid('routing_id'),
+});
+
+export const productAttributes = pgTable('product_attributes', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: varchar('name', { length: 255 }).notNull(),
+});
+
+export const productVariantAttributes = pgTable(
+  'product_variant_attributes',
+  {
+    productVariantId: uuid('product_variant_id')
+      .references(() => productVariants.id)
+      .notNull(),
+    attributeId: uuid('attribute_id')
+      .references(() => productAttributes.id)
+      .notNull(),
+    value: varchar('value', { length: 255 }).notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.productVariantId, table.attributeId] })]
+);
+
+// ---------------------------------------------------------------------------
+// Relations (for Drizzle relational query API)
+// ---------------------------------------------------------------------------
+
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  products: many(products),
+}));
+
+export const productsRelations = relations(products, ({ one, many }) => ({
+  category: one(categories, {
+    fields: [products.categoryId],
+    references: [categories.id],
+  }),
+  variants: many(productVariants),
+}));
+
+export const unitOfMeasuresRelations = relations(unitOfMeasures, ({ many }) => ({
+  productVariants: many(productVariants),
+}));
+
+export const productVariantsRelations = relations(
+  productVariants,
+  ({ one, many }) => ({
+    product: one(products, {
+      fields: [productVariants.productId],
+      references: [products.id],
+    }),
+    uom: one(unitOfMeasures, {
+      fields: [productVariants.uomId],
+      references: [unitOfMeasures.id],
+    }),
+    attributes: many(productVariantAttributes),
+  })
+);
+
+export const productAttributesRelations = relations(
+  productAttributes,
+  ({ many }) => ({
+    variantAttributes: many(productVariantAttributes),
+  })
+);
+
+export const productVariantAttributesRelations = relations(
+  productVariantAttributes,
+  ({ one }) => ({
+    productVariant: one(productVariants, {
+      fields: [productVariantAttributes.productVariantId],
+      references: [productVariants.id],
+    }),
+    attribute: one(productAttributes, {
+      fields: [productVariantAttributes.attributeId],
+      references: [productAttributes.id],
+    }),
+  })
+);

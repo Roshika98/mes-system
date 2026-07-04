@@ -66,7 +66,9 @@
           <tr>
             <td>
               {{ mat.part }}
-              <p-tag *ngIf="mat.note" severity="warn" [value]="mat.note" styleClass="ml-2" [style]="{'font-size':'0.625rem'}"></p-tag>
+              @if (mat.note) {
+                <p-tag severity="warn" [value]="mat.note" styleClass="ml-2" [style]="{'font-size':'0.625rem'}"></p-tag>
+              }
             </td>
             <td class="order-detail-page__monetary" style="text-align: right">{{ mat.qty }}</td>
             <td class="order-detail-page__monetary" style="text-align: right">\${{ mat.unitCost | number:'1.2-2' }}</td>

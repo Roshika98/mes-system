@@ -1,51 +1,51 @@
 export interface UnitOfMeasure {
-  id: number;
+  id: string;
   code: string;
   name: string;
 }
 
 export interface Category {
-  id: number;
+  id: string;
   name: string;
 }
 
 export interface Product {
-  id: number;
+  id: string;
   name: string;
-  categoryId: number;
+  categoryId: string;
   description: string;
   isManufactured: boolean;
 }
 
 export interface ProductVariant {
-  id: number;
-  productId: number;
+  id: string;
+  productId: string;
   sku: string;
   barcode: string;
-  uomId: number;
+  uomId: string;
   price: number;
-  routingId?: number;
+  routingId?: string;
 }
 
 export interface Warehouse {
-  id: number;
+  id: string;
   name: string;
   location: string;
 }
 
 export interface Location {
-  id: number;
-  warehouseId: number;
+  id: string;
+  warehouseId: string;
   name: string;
   description: string;
 }
 
 export interface Stock {
-  id: number;
-  productVariantId: number;
-  warehouseId: number;
-  locationId: number;
-  containerId?: number;
+  id: string;
+  productVariantId: string;
+  warehouseId: string;
+  locationId: string;
+  containerId?: string;
   quantity: number;
   batchNumber?: string;
   expiryDate?: Date;

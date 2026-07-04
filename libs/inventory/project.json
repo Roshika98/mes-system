@@ -1,15 +1,15 @@
 {
-  "name": "shared-types",
+  "name": "inventory",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/shared-types/src",
+  "sourceRoot": "libs/inventory/src",
   "projectType": "library",
-  "tags": ["scope:shared"],
+  "tags": ["scope:backend"],
   "targets": {
     "test": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "libs/shared-types/jest.config.cts"
+        "jestConfig": "libs/inventory/jest.config.cts"
       }
     }
   }
