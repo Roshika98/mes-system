@@ -140,11 +140,6 @@ const productVariantTypeDefs = gql`
     value: String!
   }
 
-  type ProductAttribute {
-    id: ID!
-    name: String!
-  }
-
   input CreateProductVariantInput {
     productId: ID!
     sku: String!
@@ -181,6 +176,37 @@ const productVariantTypeDefs = gql`
       input: UpdateProductVariantInput!
     ): ProductVariant!
     deleteProductVariant(id: ID!): Boolean!
+  }
+`;
+
+const productAttributeTypeDefs = gql`
+  type ProductAttribute {
+    id: ID!
+    name: String!
+  }
+
+  input CreateProductAttributeInput {
+    name: String!
+  }
+
+  input UpdateProductAttributeInput {
+    name: String
+  }
+
+  extend type Query {
+    productAttributes: [ProductAttribute!]!
+    productAttribute(id: ID!): ProductAttribute
+  }
+
+  extend type Mutation {
+    createProductAttribute(
+      input: CreateProductAttributeInput!
+    ): ProductAttribute!
+    updateProductAttribute(
+      id: ID!
+      input: UpdateProductAttributeInput!
+    ): ProductAttribute!
+    deleteProductAttribute(id: ID!): Boolean!
   }
 `;
 
@@ -383,6 +409,7 @@ export const inventoryTypeDefs: DocumentNode[] = [
   uomTypeDefs,
   productTypeDefs,
   productVariantTypeDefs,
+  productAttributeTypeDefs,
   warehouseTypeDefs,
   locationTypeDefs,
   stockTypeDefs,

@@ -5,6 +5,7 @@ import { warehouseResolvers } from './warehouse.resolver';
 import { stockResolvers } from './stock.resolver';
 import { serialNumberResolvers } from './serial-number.resolver';
 import { stockMovementResolvers } from './stock-movement.resolver';
+import { productAttributeResolvers } from './product-attribute.resolver';
 
 /**
  * All inventory module resolvers, deep-merged into a single
@@ -17,5 +18,6 @@ export const inventoryResolvers = mergeResolvers([
   stockResolvers,
   serialNumberResolvers,
   stockMovementResolvers,
+  productAttributeResolvers,
 ]);
 

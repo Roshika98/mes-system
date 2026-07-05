@@ -24,6 +24,7 @@ export {
   SerialNumberService,
   StockMovementService,
   ProductOrchestratorService,
+  ProductAttributeService,
 } from './services';
 
 // Repositories
@@ -33,6 +34,7 @@ export {
   ProductVariantRepository,
   UnitOfMeasureRepository,
   ProductVariantAttributeRepository,
+  ProductAttributeRepository,
   WarehouseRepository,
   LocationRepository,
   StockRepository,

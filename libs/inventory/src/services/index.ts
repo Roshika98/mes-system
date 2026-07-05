@@ -9,4 +9,4 @@ export { WarehouseService, LocationService } from './warehouse.service';
 export { StockService } from './stock.service';
 export { SerialNumberService } from './serial-number.service';
 export { StockMovementService } from './stock-movement.service';
-
+export { ProductAttributeService } from './product-attribute.service';

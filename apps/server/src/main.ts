@@ -16,6 +16,7 @@ import {
   ProductVariantRepository,
   UnitOfMeasureRepository,
   ProductVariantAttributeRepository,
+  ProductAttributeRepository,
   WarehouseRepository,
   LocationRepository,
   StockRepository,
@@ -32,6 +33,7 @@ import {
   SerialNumberService,
   StockMovementService,
   ProductOrchestratorService,
+  ProductAttributeService,
   GraphQLContext,
 } from '@mes-system/inventory';
 
@@ -112,6 +114,7 @@ async function bootstrap() {
           tenantId,
           userId,
         );
+        const attributeRepo = new ProductAttributeRepository(db, tenantId, userId);
         const warehouseRepo = new WarehouseRepository(db, tenantId, userId);
         const locationRepo = new LocationRepository(db, tenantId, userId);
         const stockRepo = new StockRepository(db, tenantId, userId);
@@ -138,6 +141,7 @@ async function bootstrap() {
         const unitOfMeasureService = new UnitOfMeasureService(uomRepo);
         const productVariantAttributeService =
           new ProductVariantAttributeService(variantAttrRepo);
+        const productAttributeService = new ProductAttributeService(attributeRepo);
         const warehouseService = new WarehouseService(warehouseRepo);
         const locationService = new LocationService(locationRepo, warehouseRepo);
         const stockService = new StockService(stockRepo);
@@ -173,6 +177,7 @@ async function bootstrap() {
             serialNumberService,
             stockMovementService,
             productOrchestratorService,
+            productAttributeService,
           },
         };
 
