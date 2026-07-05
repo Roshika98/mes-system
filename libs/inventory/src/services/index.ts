@@ -1,4 +1,5 @@
 export { ProductService, CategoryService } from './product.service';
+export { ProductOrchestratorService } from './product-orchestrator.service';
 export {
   ProductVariantService,
   UnitOfMeasureService,

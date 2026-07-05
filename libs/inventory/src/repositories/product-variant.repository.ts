@@ -31,8 +31,12 @@ export class ProductVariantRepository {
   constructor(
     private db: Db,
     private tenantId: string,
-    private userId: string
+    private userId: string,
   ) {}
+
+  withTransaction(tx: Db): ProductVariantRepository {
+    return new ProductVariantRepository(tx, this.tenantId, this.userId);
+  }
 
   async findByProductId(productId: string) {
     return this.db
@@ -41,8 +45,8 @@ export class ProductVariantRepository {
       .where(
         and(
           eq(productVariants.productId, productId),
-          eq(productVariants.tenantId, this.tenantId)
-        )
+          eq(productVariants.tenantId, this.tenantId),
+        ),
       );
   }
 
@@ -53,8 +57,8 @@ export class ProductVariantRepository {
       .where(
         and(
           eq(productVariants.id, id),
-          eq(productVariants.tenantId, this.tenantId)
-        )
+          eq(productVariants.tenantId, this.tenantId),
+        ),
       );
     return result[0] ?? null;
   }
@@ -66,8 +70,8 @@ export class ProductVariantRepository {
       .where(
         and(
           eq(productVariants.sku, sku),
-          eq(productVariants.tenantId, this.tenantId)
-        )
+          eq(productVariants.tenantId, this.tenantId),
+        ),
       );
     return result[0] ?? null;
   }
@@ -90,6 +94,24 @@ export class ProductVariantRepository {
     return result[0];
   }
 
+  async createMany(inputs: CreateProductVariantInput[]) {
+    if (inputs.length === 0) return [];
+
+    const values = inputs.map((input) => ({
+      productId: input.productId,
+      sku: input.sku,
+      barcode: input.barcode ?? null,
+      uomId: input.uomId,
+      price: input.price,
+      routingId: input.routingId ?? null,
+      tenantId: this.tenantId,
+      createdBy: this.userId,
+      updatedBy: this.userId,
+    }));
+
+    return this.db.insert(productVariants).values(values).returning();
+  }
+
   async update(id: string, input: UpdateProductVariantInput) {
     const updateData: Record<string, unknown> = {
       updatedBy: this.userId,
@@ -99,7 +121,8 @@ export class ProductVariantRepository {
     if (input.barcode !== undefined) updateData['barcode'] = input.barcode;
     if (input.uomId !== undefined) updateData['uomId'] = input.uomId;
     if (input.price !== undefined) updateData['price'] = input.price;
-    if (input.routingId !== undefined) updateData['routingId'] = input.routingId;
+    if (input.routingId !== undefined)
+      updateData['routingId'] = input.routingId;
 
     const result = await this.db
       .update(productVariants)
@@ -107,8 +130,8 @@ export class ProductVariantRepository {
       .where(
         and(
           eq(productVariants.id, id),
-          eq(productVariants.tenantId, this.tenantId)
-        )
+          eq(productVariants.tenantId, this.tenantId),
+        ),
       )
       .returning();
     return result[0] ?? null;
@@ -120,8 +143,8 @@ export class ProductVariantRepository {
       .where(
         and(
           eq(productVariants.id, id),
-          eq(productVariants.tenantId, this.tenantId)
-        )
+          eq(productVariants.tenantId, this.tenantId),
+        ),
       )
       .returning({ id: productVariants.id });
     return result.length > 0;
@@ -182,8 +205,16 @@ export class ProductVariantAttributeRepository {
   constructor(
     private db: Db,
     private tenantId: string,
-    private userId: string
+    private userId: string,
   ) {}
+
+  withTransaction(tx: Db): ProductVariantAttributeRepository {
+    return new ProductVariantAttributeRepository(
+      tx,
+      this.tenantId,
+      this.userId,
+    );
+  }
 
   async findByVariantId(productVariantId: string) {
     return this.db
@@ -196,13 +227,30 @@ export class ProductVariantAttributeRepository {
       .from(productVariantAttributes)
       .innerJoin(
         productAttributes,
-        eq(productVariantAttributes.attributeId, productAttributes.id)
+        eq(productVariantAttributes.attributeId, productAttributes.id),
       )
       .where(
         and(
           eq(productVariantAttributes.productVariantId, productVariantId),
-          eq(productVariantAttributes.tenantId, this.tenantId)
-        )
+          eq(productVariantAttributes.tenantId, this.tenantId),
+        ),
       );
+  }
+
+  async createMany(
+    inputs: { productVariantId: string; attributeId: string; value: string }[],
+  ) {
+    if (inputs.length === 0) return [];
+
+    const values = inputs.map((input) => ({
+      productVariantId: input.productVariantId,
+      attributeId: input.attributeId,
+      value: input.value,
+      tenantId: this.tenantId,
+      createdBy: this.userId,
+      updatedBy: this.userId,
+    }));
+
+    return this.db.insert(productVariantAttributes).values(values).returning();
   }
 }

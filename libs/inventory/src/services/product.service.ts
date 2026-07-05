@@ -6,13 +6,10 @@ import {
 export class ProductService {
   constructor(
     private productRepo: ProductRepository,
-    private categoryRepo: CategoryRepository
+    private categoryRepo: CategoryRepository,
   ) {}
 
-  async findAll(filters?: {
-    categoryId?: string;
-    isManufactured?: boolean;
-  }) {
+  async findAll(filters?: { categoryId?: string; isManufactured?: boolean }) {
     return this.productRepo.findAll(filters);
   }
 
@@ -35,6 +32,7 @@ export class ProductService {
     return this.productRepo.create(input);
   }
 
+
   async update(
     id: string,
     input: {
@@ -42,7 +40,7 @@ export class ProductService {
       categoryId?: string;
       description?: string | null;
       isManufactured?: boolean;
-    }
+    },
   ) {
     // Verify the product exists
     const existing = await this.productRepo.findById(id);
@@ -54,9 +52,7 @@ export class ProductService {
     if (input.categoryId) {
       const category = await this.categoryRepo.findById(input.categoryId);
       if (!category) {
-        throw new Error(
-          `Category with id "${input.categoryId}" not found.`
-        );
+        throw new Error(`Category with id "${input.categoryId}" not found.`);
       }
     }
 

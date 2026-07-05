@@ -63,6 +63,15 @@ export const productVariantResolvers = {
       return ctx.services.productVariantService.create(args.input);
     },
 
+    addVariantsToProduct: (
+      _parent: unknown,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      args: { input: any },
+      ctx: GraphQLContext
+    ) => {
+      return ctx.services.productOrchestratorService.addVariantsToProduct(args.input);
+    },
+
     updateProductVariant: (
       _parent: unknown,
       args: {

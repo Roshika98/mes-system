@@ -23,6 +23,7 @@ export {
   StockService,
   SerialNumberService,
   StockMovementService,
+  ProductOrchestratorService,
 } from './services';
 
 // Repositories

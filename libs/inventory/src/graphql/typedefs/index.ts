@@ -78,6 +78,28 @@ const productTypeDefs = gql`
     isManufactured: Boolean!
   }
 
+  input VariantAttributeInput {
+    attributeId: ID!
+    value: String!
+  }
+
+  input CreateVariantWithAttributesInput {
+    sku: String!
+    barcode: String
+    uomId: ID!
+    price: Float!
+    routingId: ID
+    attributes: [VariantAttributeInput!]!
+  }
+
+  input CreateProductWithVariantsInput {
+    name: String!
+    categoryId: ID!
+    description: String
+    isManufactured: Boolean!
+    variants: [CreateVariantWithAttributesInput!]!
+  }
+
   input UpdateProductInput {
     name: String
     categoryId: ID
@@ -92,6 +114,7 @@ const productTypeDefs = gql`
 
   extend type Mutation {
     createProduct(input: CreateProductInput!): Product!
+    createProductWithVariants(input: CreateProductWithVariantsInput!): Product!
     updateProduct(id: ID!, input: UpdateProductInput!): Product!
     deleteProduct(id: ID!): Boolean!
   }
@@ -139,6 +162,11 @@ const productVariantTypeDefs = gql`
     routingId: ID
   }
 
+  input AddVariantsToProductInput {
+    productId: ID!
+    variants: [CreateVariantWithAttributesInput!]!
+  }
+
   extend type Query {
     productVariants(productId: ID!): [ProductVariant!]!
     productVariant(id: ID!): ProductVariant
@@ -147,6 +175,7 @@ const productVariantTypeDefs = gql`
 
   extend type Mutation {
     createProductVariant(input: CreateProductVariantInput!): ProductVariant!
+    addVariantsToProduct(input: AddVariantsToProductInput!): [ProductVariant!]!
     updateProductVariant(
       id: ID!
       input: UpdateProductVariantInput!

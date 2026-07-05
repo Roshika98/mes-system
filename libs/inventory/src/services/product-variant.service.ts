@@ -9,7 +9,7 @@ export class ProductVariantService {
   constructor(
     private variantRepo: ProductVariantRepository,
     private productRepo: ProductRepository,
-    private uomRepo: UnitOfMeasureRepository
+    private uomRepo: UnitOfMeasureRepository,
   ) {}
 
   async findByProductId(productId: string) {
@@ -24,6 +24,7 @@ export class ProductVariantService {
     return this.variantRepo.findBySku(sku);
   }
 
+
   async create(input: {
     productId: string;
     sku: string;
@@ -35,17 +36,13 @@ export class ProductVariantService {
     // Validate that the parent product exists
     const product = await this.productRepo.findById(input.productId);
     if (!product) {
-      throw new Error(
-        `Product with id "${input.productId}" not found.`
-      );
+      throw new Error(`Product with id "${input.productId}" not found.`);
     }
 
     // Validate that the UOM exists
     const uom = await this.uomRepo.findById(input.uomId);
     if (!uom) {
-      throw new Error(
-        `Unit of Measure with id "${input.uomId}" not found.`
-      );
+      throw new Error(`Unit of Measure with id "${input.uomId}" not found.`);
     }
 
     // Check SKU uniqueness
@@ -70,7 +67,7 @@ export class ProductVariantService {
       uomId?: string;
       price?: number;
       routingId?: string | null;
-    }
+    },
   ) {
     const existing = await this.variantRepo.findById(id);
     if (!existing) {
@@ -81,9 +78,7 @@ export class ProductVariantService {
     if (input.uomId) {
       const uom = await this.uomRepo.findById(input.uomId);
       if (!uom) {
-        throw new Error(
-          `Unit of Measure with id "${input.uomId}" not found.`
-        );
+        throw new Error(`Unit of Measure with id "${input.uomId}" not found.`);
       }
     }
 

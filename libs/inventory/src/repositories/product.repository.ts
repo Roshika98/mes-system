@@ -23,13 +23,14 @@ export class ProductRepository {
   constructor(
     private db: Db,
     private tenantId: string,
-    private userId: string
+    private userId: string,
   ) {}
 
-  async findAll(filters?: {
-    categoryId?: string;
-    isManufactured?: boolean;
-  }) {
+  withTransaction(tx: Db): ProductRepository {
+    return new ProductRepository(tx, this.tenantId, this.userId);
+  }
+
+  async findAll(filters?: { categoryId?: string; isManufactured?: boolean }) {
     const conditions = [eq(products.tenantId, this.tenantId)];
 
     if (filters?.categoryId) {
@@ -76,9 +77,12 @@ export class ProductRepository {
       updatedAt: new Date(),
     };
     if (input.name !== undefined) updateData['name'] = input.name;
-    if (input.categoryId !== undefined) updateData['categoryId'] = input.categoryId;
-    if (input.description !== undefined) updateData['description'] = input.description;
-    if (input.isManufactured !== undefined) updateData['isManufactured'] = input.isManufactured;
+    if (input.categoryId !== undefined)
+      updateData['categoryId'] = input.categoryId;
+    if (input.description !== undefined)
+      updateData['description'] = input.description;
+    if (input.isManufactured !== undefined)
+      updateData['isManufactured'] = input.isManufactured;
 
     const result = await this.db
       .update(products)

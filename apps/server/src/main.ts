@@ -31,6 +31,7 @@ import {
   StockService,
   SerialNumberService,
   StockMovementService,
+  ProductOrchestratorService,
   GraphQLContext,
 } from '@mes-system/inventory';
 
@@ -123,7 +124,16 @@ async function bootstrap() {
         const productVariantService = new ProductVariantService(
           variantRepo,
           productRepo,
-          uomRepo,
+          uomRepo
+        );
+        const productOrchestratorService = new ProductOrchestratorService(
+          db,
+          tenantId,
+          userId,
+          productRepo,
+          variantRepo,
+          categoryRepo,
+          variantAttrRepo
         );
         const unitOfMeasureService = new UnitOfMeasureService(uomRepo);
         const productVariantAttributeService =
@@ -162,6 +172,7 @@ async function bootstrap() {
             stockService,
             serialNumberService,
             stockMovementService,
+            productOrchestratorService,
           },
         };
 

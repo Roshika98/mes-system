@@ -9,6 +9,7 @@ import {
   StockService,
   SerialNumberService,
   StockMovementService,
+  ProductOrchestratorService,
 } from '../services';
 
 /**
@@ -31,6 +32,7 @@ export interface GraphQLContext {
     stockService: StockService;
     serialNumberService: SerialNumberService;
     stockMovementService: StockMovementService;
+    productOrchestratorService: ProductOrchestratorService;
   };
 }
 
