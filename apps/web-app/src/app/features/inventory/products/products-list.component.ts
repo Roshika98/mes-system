@@ -37,11 +37,51 @@ export class ProductsListComponent implements OnInit {
 
   ngOnInit() {
     this.products = [
-      { id: 1, sku: 'PRD-001', name: 'Industrial Valve A', category: 'Valves', price: 120.50, inStock: 450, status: 'In Stock' },
-      { id: 2, sku: 'PRD-002', name: 'Steel Pipe 20ft', category: 'Pipes', price: 85.00, inStock: 12, status: 'Low Stock' },
-      { id: 3, sku: 'PRD-003', name: 'Pressure Gauge', category: 'Instruments', price: 45.25, inStock: 0, status: 'Out of Stock' },
-      { id: 4, sku: 'PRD-004', name: 'Sealing Ring (Pack of 10)', category: 'Consumables', price: 15.00, inStock: 1200, status: 'In Stock' },
-      { id: 5, sku: 'PRD-005', name: 'Hydraulic Pump C', category: 'Pumps', price: 850.00, inStock: 5, status: 'Low Stock' }
+      {
+        id: '1',
+        sku: 'PRD-001',
+        name: 'Industrial Valve A',
+        category: 'Valves',
+        price: 120.5,
+        inStock: 450,
+        status: 'In Stock',
+      },
+      {
+        id: '2',
+        sku: 'PRD-002',
+        name: 'Steel Pipe 20ft',
+        category: 'Pipes',
+        price: 85.0,
+        inStock: 12,
+        status: 'Low Stock',
+      },
+      {
+        id: '3',
+        sku: 'PRD-003',
+        name: 'Pressure Gauge',
+        category: 'Instruments',
+        price: 45.25,
+        inStock: 0,
+        status: 'Out of Stock',
+      },
+      {
+        id: '4',
+        sku: 'PRD-004',
+        name: 'Sealing Ring (Pack of 10)',
+        category: 'Consumables',
+        price: 15.0,
+        inStock: 1200,
+        status: 'In Stock',
+      },
+      {
+        id: '5',
+        sku: 'PRD-005',
+        name: 'Hydraulic Pump C',
+        category: 'Pumps',
+        price: 850.0,
+        inStock: 5,
+        status: 'Low Stock',
+      },
     ];
   }
 
