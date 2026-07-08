@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package mes.inventory;
+
+// Payload for when stock is adjusted
+message StockAdjustedPayload {
+  string movement_id = 1;
+  string product_id = 2;
+  int32 quantity_change = 3;
+  int32 new_total_quantity = 4;
+  string reason = 5;
+}

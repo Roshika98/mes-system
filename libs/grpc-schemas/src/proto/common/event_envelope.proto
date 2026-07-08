@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package mes.common;
+
+import "google/protobuf/timestamp.proto";
+
+// Represents the standard envelope for all Kafka messages
+message MesEvent {
+  string event_id = 1;
+  string event_type = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  string source = 4;
+  optional string correlation_id = 5;
+  string tenant_id = 6;
+  string user_id = 7;
+  
+  // The event snapshot payload, serialized.
+  // We use 'bytes' here because the 'event_type' field already acts as our type discriminator
+  // for routing to the correct handler, making google.protobuf.Any redundant.
+  bytes data = 8; 
+}

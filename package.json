@@ -5,7 +5,8 @@
   "scripts": {
     "db:generate": "dotenv -e .env -- drizzle-kit generate --config=libs/database/drizzle.config.ts",
     "db:push": "dotenv -e .env -- drizzle-kit push --config=libs/database/drizzle.config.ts",
-    "db:migrate": "dotenv -e .env -- drizzle-kit migrate --config=libs/database/drizzle.config.ts"
+    "db:migrate": "dotenv -e .env -- drizzle-kit migrate --config=libs/database/drizzle.config.ts",
+    "proto:generate": "node scripts/generate-protos.mjs"
   },
   "private": true,
   "dependencies": {
@@ -39,7 +40,6 @@
     "pg": "^8.22.0",
     "primeicons": "^7.0.0",
     "primeng": "^21.1.9",
-    "protobufjs": "^8.7.0",
     "rxjs": "~7.8.0"
   },
   "devDependencies": {
@@ -88,6 +88,7 @@
     "ts-jest": "^29.4.0",
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",
+    "ts-proto": "^2.6.0",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.40.0"
   }

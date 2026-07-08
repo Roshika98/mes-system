@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package mes.inventory;
+
+// Payload for when a new product is created
+message ProductCreatedPayload {
+  string product_id = 1;
+  string sku = 2;
+  string name = 3;
+  double default_price = 4;
+}
