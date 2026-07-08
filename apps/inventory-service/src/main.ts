@@ -5,7 +5,9 @@ import { expressMiddleware } from '@as-integrations/express5';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { GraphQLError } from 'graphql';
 import passport from 'passport';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { configurePassport, authMiddleware } from '@mes-system/server-auth';
+import { EventBus, EventPublisher } from '@mes-system/message-bus';
 
 import { TenantConnectionManager } from '@mes-system/database';
 import {
@@ -37,10 +39,20 @@ import {
   GraphQLContext,
 } from '@mes-system/inventory';
 
-
 async function bootstrap() {
   const host = process.env['HOST'] ?? 'localhost';
   const port = process.env['PORT'] ? Number(process.env['PORT']) : 3000;
+
+  const eventBus = EventBus.CreateEventBus('inventory-service');
+
+  const topicgenerator = eventBus.checkForTopics();
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  for await (const topic of topicgenerator) {
+    console.log('waiting for topic initialization..');
+  }
+
+  await eventBus.connect();
 
   const app = express();
 
@@ -80,6 +92,7 @@ async function bootstrap() {
         const tenantId =
           (req.headers['x-tenant-id'] as string) ||
           '3af21e98-cc13-479b-96db-bbda32fe1fab';
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const user = (req as any).user;
         const userId =
           user?.sub ||
@@ -104,6 +117,9 @@ async function bootstrap() {
         // Get the specific database connection for this tenant
         const db = await TenantConnectionManager.getDbForTenant(tenantId);
 
+        // Get the event publisher
+        const eventPublisher = new EventPublisher(eventBus.Producer);
+
         // Instantiate Repositories strictly scoped to this request's tenant
         const productRepo = new ProductRepository(db, tenantId, userId);
         const categoryRepo = new CategoryRepository(db, tenantId, userId);
@@ -114,20 +130,39 @@ async function bootstrap() {
           tenantId,
           userId,
         );
-        const attributeRepo = new ProductAttributeRepository(db, tenantId, userId);
+        const attributeRepo = new ProductAttributeRepository(
+          db,
+          tenantId,
+          userId,
+        );
         const warehouseRepo = new WarehouseRepository(db, tenantId, userId);
         const locationRepo = new LocationRepository(db, tenantId, userId);
         const stockRepo = new StockRepository(db, tenantId, userId);
-        const serialNumberRepo = new SerialNumberRepository(db, tenantId, userId);
-        const stockMovementRepo = new StockMovementRepository(db, tenantId, userId);
+        const serialNumberRepo = new SerialNumberRepository(
+          db,
+          tenantId,
+          userId,
+        );
+        const stockMovementRepo = new StockMovementRepository(
+          db,
+          tenantId,
+          userId,
+        );
 
         // Instantiate Services for this request
-        const productService = new ProductService(productRepo, categoryRepo);
-        const categoryService = new CategoryService(categoryRepo);
+        const productService = new ProductService(
+          productRepo,
+          categoryRepo,
+          eventPublisher,
+        );
+        const categoryService = new CategoryService(
+          categoryRepo,
+          eventPublisher,
+        );
         const productVariantService = new ProductVariantService(
           variantRepo,
           productRepo,
-          uomRepo
+          uomRepo,
         );
         const productOrchestratorService = new ProductOrchestratorService(
           db,
@@ -136,14 +171,19 @@ async function bootstrap() {
           productRepo,
           variantRepo,
           categoryRepo,
-          variantAttrRepo
+          variantAttrRepo,
         );
         const unitOfMeasureService = new UnitOfMeasureService(uomRepo);
         const productVariantAttributeService =
           new ProductVariantAttributeService(variantAttrRepo);
-        const productAttributeService = new ProductAttributeService(attributeRepo);
+        const productAttributeService = new ProductAttributeService(
+          attributeRepo,
+        );
         const warehouseService = new WarehouseService(warehouseRepo);
-        const locationService = new LocationService(locationRepo, warehouseRepo);
+        const locationService = new LocationService(
+          locationRepo,
+          warehouseRepo,
+        );
         const stockService = new StockService(stockRepo);
         const serialNumberService = new SerialNumberService(
           serialNumberRepo,
@@ -180,7 +220,6 @@ async function bootstrap() {
             productAttributeService,
           },
         };
-
       },
     }),
   );

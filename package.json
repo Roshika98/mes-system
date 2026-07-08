@@ -39,6 +39,7 @@
     "pg": "^8.22.0",
     "primeicons": "^7.0.0",
     "primeng": "^21.1.9",
+    "protobufjs": "^8.7.0",
     "rxjs": "~7.8.0"
   },
   "devDependencies": {

@@ -3,12 +3,12 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "tags": ["scope:backend"],
-  "implicitDependencies": ["server"],
+  "implicitDependencies": ["inventory-service"],
   "targets": {
     "e2e": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
-      "dependsOn": ["server:build", "server:serve"],
+      "dependsOn": ["inventory-service:build", "inventory-service:serve"],
       "options": {
         "jestConfig": "apps/server-e2e/jest.config.cts",
         "passWithNoTests": true

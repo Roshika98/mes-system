@@ -2,11 +2,13 @@ import {
   ProductRepository,
   CategoryRepository,
 } from '../repositories/product.repository';
+import { EventPublisher } from '@mes-system/message-bus';
 
 export class ProductService {
   constructor(
     private productRepo: ProductRepository,
     private categoryRepo: CategoryRepository,
+    private eventPublisher: EventPublisher,
   ) {}
 
   async findAll(filters?: { categoryId?: string; isManufactured?: boolean }) {
@@ -31,7 +33,6 @@ export class ProductService {
 
     return this.productRepo.create(input);
   }
-
 
   async update(
     id: string,
@@ -70,7 +71,10 @@ export class ProductService {
 }
 
 export class CategoryService {
-  constructor(private categoryRepo: CategoryRepository) {}
+  constructor(
+    private categoryRepo: CategoryRepository,
+    private eventPublisher: EventPublisher,
+  ) {}
 
   async findAll() {
     return this.categoryRepo.findAll();

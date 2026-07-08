@@ -1,13 +1,20 @@
-import { Admin, Kafka, Producer } from 'kafkajs';
+import { Admin, Kafka, Producer, logLevel } from 'kafkajs';
 
-class MessageBus {
-  private static instance: MessageBus;
+export class EventBus {
+  private static instance: EventBus;
 
-  public static CreateMessageBus(clientName: string) {
-    if (!MessageBus.instance) {
-      MessageBus.instance = new MessageBus(clientName);
+  public static CreateEventBus(clientName: string) {
+    if (!EventBus.instance) {
+      EventBus.instance = new EventBus(clientName);
     }
-    return MessageBus.instance;
+    return EventBus.instance;
+  }
+
+  public get Producer(): Producer {
+    if (!this.producer) {
+      throw new Error('Producer not initialized');
+    }
+    return this.producer;
   }
 
   private kafkaInstance: Kafka;
@@ -19,6 +26,7 @@ class MessageBus {
     this.kafkaInstance = new Kafka({
       clientId: this.clientName,
       brokers: [kafkaBroker],
+      logLevel: logLevel.NOTHING,
     });
     this.admin = this.kafkaInstance.admin();
     this.producer = this.kafkaInstance.producer();
@@ -35,8 +43,9 @@ class MessageBus {
           break;
         }
         await new Promise((resolve) => setTimeout(resolve, 1000));
-      } catch (error) {
-        console.log(error);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (err) {
+        console.info('waiting for broker...');
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
@@ -50,5 +59,3 @@ class MessageBus {
     await this.producer.disconnect();
   }
 }
-
-export default MessageBus;
